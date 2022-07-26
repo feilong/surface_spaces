@@ -38,5 +38,16 @@ def test_comparison_with_searchlights():
                     np.testing.assert_array_equal(mask1, mask2)
 
 
-# def test_number_of_cortical_vertices():
-#     for space in ['']
+def test_overlaps():
+    spaces = [a + b for a in ['onavg-', 'fsavg-'] for b in ['ico32', 'ico64', 'ico128']]
+    geometries = ['on1031', 'fsavg', 'fsavg5', 'fsavg6']
+    for space in spaces:
+        for lr in 'lr':
+            for i, g1 in enumerate(geometries):
+                m1 = get_cortical_mask(lr, space, g1)
+                for j, g2 in enumerate(geometries):
+                    if j <= i:
+                        continue
+                    m2 = get_cortical_mask(lr, space, g2)
+                    m3 = np.logical_and(m1, m2)
+                    assert m3.mean() > m1.mean() * m2.mean()
